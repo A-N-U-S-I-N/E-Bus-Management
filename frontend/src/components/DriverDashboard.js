@@ -28,29 +28,38 @@ const DriverDashboard = () => {
 
   useEffect(() => {
     const fetchBusDetails = async () => {
-      console.log('Fetching bus details with token:', token);
-      console.log('Current user:', user);
-      if (!token) return;
       try {
         const res = await API.get('/driver/bus-details', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log('Bus details API response:', res.data);
         if (res.data) {
           setSavedBusDetails(res.data);
-          setEditMode(false);
+          // Set formData only after fetching saved bus details
+          setFormData({
+            busName: res.data.busName || '',
+            busNumber: res.data.busNumber || '',
+            busType: res.data.busType || '',
+            contactNumber: user?.contactNumber || '',
+            source: res.data.source || '',
+            destination: res.data.destination || '',
+          });
           setLocation(res.data.location || { latitude: '', longitude: '' });
-          setFormData((prev) => ({ ...prev, ...res.data }));
+          setEditMode(false);
         } else {
           setEditMode(true);
         }
-      } catch (err) {
-        console.error('Error fetching bus details:', err);
+      } catch (error) {
         setEditMode(true);
+        // Optionally log error
+        console.error('Error fetching bus details', error);
       }
     };
-    fetchBusDetails();
-  }, [token, user]);
+  
+    if (token) {
+      fetchBusDetails();
+    }
+  }, [token, user?.contactNumber]);
+  
 
   useEffect(() => {
     if (location.latitude && location.longitude) {
