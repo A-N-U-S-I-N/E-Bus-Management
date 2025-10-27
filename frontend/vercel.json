@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://e-bus-management-qe1p.onrender.com/api/$1"
+    }
+  ]
+}
